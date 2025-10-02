@@ -1,12 +1,17 @@
-name: Build & Deploy ASP.NET static site to Azure App Service
+name: Build & Deploy to Azure Web App (Slot)
 
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,12 +21,30 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
       - name: Publish
         run: dotnet publish -c Release -o publish
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          app-name: wp1-17786859-fa25
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      # Deploy the build output to the deployment slot
+      - name: Deploy to App Service slot
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: wp1-bstroik-fa25
+          slot-name: container-demo
           package: publish
