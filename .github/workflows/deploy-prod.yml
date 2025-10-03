@@ -1,1 +1,63 @@
+name: Build & Deploy to Azure Web App (Prod - ZIP)
 
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AZURE_WEBAPP_NAME: wp1-17786859-fa25
+  RESOURCE_GROUP: rg-WebProgramming1-Fall2025-17786859
+  DOTNET_VERSION: "8.0.x"
+  PROJECT_PATH: "."
+  PUBLISH_DIR: "publish"
+  ZIP_NAME: "app.zip"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet restore
+
+      - name: Build (Release)
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish (self-contained ZIP payload)
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet publish --configuration Release --output ${{ github.workspace }}/${{ env.PUBLISH_DIR }}
+
+      - name: Zip artifacts
+        run: |
+          cd "${{ env.PUBLISH_DIR }}"
+          zip -r "../${{ env.ZIP_NAME }}" .
+
+      - name: Azure Login (class SP)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Use ZIP Deploy via Azure CLI (works great with azure/login)
+      - name: Deploy ZIP to Azure Web App
+        run: |
+          az webapp deploy \
+            --resource-group "${{ env.RESOURCE_GROUP }}" \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --src-path "${{ env.ZIP_NAME }}" \
+            --type zip
+
+      - name: Warm up site
+        run: |
+          echo "Deployed to https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
