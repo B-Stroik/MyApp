@@ -1,1 +1,74 @@
+name: Build & Deploy Container to Slot
 
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag (default = commit SHA)"
+        required: false
+
+env:
+  APP_NAME: wp1-17786859-fa25
+  SLOT: container-demo
+  ACR_NAME: wp1fa25acr
+  RESOURCE_GROUP: rg-WebProgramming1-Fall2025-17786859
+  # name your repo/image however you like; keeping it simple:
+  IMAGE_REPO: app
+  # Port your container listens on; must match your Dockerfile EXPOSE / ASPNETCORE_URLS
+  CONTAINER_PORT: "8080"
+
+jobs:
+  build-push-configure:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login (class SP)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Resolve TAG
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.image_tag }}" ]; then
+            echo "TAG=${{ github.event.inputs.image_tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG=${GITHUB_SHA::12}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ACR Login
+        run: az acr login -n ${{ env.ACR_NAME }}
+
+      - name: Build image
+        run: |
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_REPO }}:${{ steps.tag.outputs.TAG }} .
+
+      - name: Push image
+        run: |
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_REPO }}:${{ steps.tag.outputs.TAG }}
+
+      - name: Configure slot to run image
+        run: |
+          az webapp config container set \
+            --resource-group "${{ env.RESOURCE_GROUP }}" \
+            --name "${{ env.APP_NAME }}" \
+            --slot "${{ env.SLOT }}" \
+            --docker-custom-image-name "${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_REPO }}:${{ steps.tag.outputs.TAG }}" \
+            --docker-registry-server-url "https://${{ env.ACR_NAME }}.azurecr.io"
+
+      # Ensure the slot knows which port your container serves on
+      - name: Set slot app settings (port + URLs)
+        run: |
+          az webapp config appsettings set \
+            --resource-group "${{ env.RESOURCE_GROUP }}" \
+            --name "${{ env.APP_NAME }}" \
+            --slot "${{ env.SLOT }}" \
+            --settings WEBSITES_PORT=${{ env.CONTAINER_PORT }} ASPNETCORE_URLS=http://0.0.0.0:${{ env.CONTAINER_PORT }}
+
+      - name: Output slot URL
+        run: echo "Slot URL: https://${{ env.APP_NAME }}-${{ env.SLOT }}.azurewebsites.net"
