@@ -11,6 +11,7 @@ env:
   PROJECT_PATH: "."
   PUBLISH_DIR: "publish"
   ZIP_NAME: "app.zip"
+  KEYVAULT_NAME: <your-keyvault-name>   # e.g. wp1-fa25-kv
 
 jobs:
   build-and-deploy:
@@ -33,7 +34,7 @@ jobs:
         working-directory: ${{ env.PROJECT_PATH }}
         run: dotnet build --configuration Release --no-restore
 
-      - name: Publish (self-contained ZIP payload)
+      - name: Publish (Release)
         working-directory: ${{ env.PROJECT_PATH }}
         run: dotnet publish --configuration Release --output ${{ github.workspace }}/${{ env.PUBLISH_DIR }}
 
@@ -48,8 +49,25 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}   # include if your class uses secret auth
 
-      # Use ZIP Deploy via Azure CLI (works great with azure/login)
+      - name: Get Key Vault secrets
+        id: kv
+        uses: azure/get-keyvault-secrets@v1
+        with:
+          keyvault: ${{ env.KEYVAULT_NAME }}
+          secrets: database-password, api-key
+
+      - name: Set app settings with KV outputs
+        run: |
+          az webapp config appsettings set \
+            --resource-group "${{ env.RESOURCE_GROUP }}" \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --settings \
+              "ApiKey=${{ steps.kv.outputs.api-key }}" \
+              "ConnectionStrings__Default=Server=tcp:<sql-server>.database.windows.net,1433;Database=<db>;User ID=<user>;Password=${{ steps.kv.outputs.database-password }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+
+      # ---- Deploy ZIP ----
       - name: Deploy ZIP to Azure Web App
         run: |
           az webapp deploy \
@@ -59,5 +77,4 @@ jobs:
             --type zip
 
       - name: Warm up site
-        run: |
-          echo "Deployed to https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+        run: echo "Deployed to https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
