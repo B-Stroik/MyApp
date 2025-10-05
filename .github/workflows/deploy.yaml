@@ -45,6 +45,6 @@ jobs:
       - name: Deploy to App Service slot
         uses: azure/webapps-deploy@v3
         with:
-          app-name: wp1-bstroik-fa25
+          app-name: wp1-17786859-fa25
           slot-name: container-demo
           package: publish
