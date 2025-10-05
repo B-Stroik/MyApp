@@ -15,7 +15,6 @@ env:
   PROJECT_PATH: "."
   PUBLISH_DIR: "publish"
   ZIP_NAME: "app.zip"
-  KEYVAULT_NAME: <your-keyvault-name>   # e.g. wp1-fa25-kv
 
 jobs:
   build-and-deploy:
@@ -57,13 +56,6 @@ jobs:
               "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
-
-      - name: Get Key Vault secrets
-        id: kv
-        uses: azure/get-keyvault-secrets@v1
-        with:
-          keyvault: ${{ env.KEYVAULT_NAME }}
-          secrets: database-password, api-key
 
       - name: Set app settings with KV outputs
         run: |
