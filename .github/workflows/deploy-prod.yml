@@ -12,7 +12,6 @@ env:
   AZURE_WEBAPP_NAME: wp1-17786859-fa25
   RESOURCE_GROUP: rg-WebProgramming1-Fall2025-17786859
   DOTNET_VERSION: "8.0.x"
-  PROJECT_PATH: "path/to/WebApp.csproj"   # <-- point to your web app .csproj
   PUBLISH_DIR: "publish"
   ZIP_NAME: "app.zip"
 
@@ -28,6 +27,18 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      # Auto-detect the web project (.csproj). If you KNOW the path, replace this step
+      # with: echo "PROJECT_PATH=path/to/WebApp.csproj" >> $GITHUB_ENV
+      - name: Detect .csproj
+        run: |
+          CS=$(git ls-files '*.csproj' | head -n 1)
+          if [ -z "$CS" ]; then
+            echo "No .csproj found at repo root. Set PROJECT_PATH manually." >&2
+            exit 1
+          fi
+          echo "Detected: $CS"
+          echo "PROJECT_PATH=$CS" >> $GITHUB_ENV
+
       - name: Restore
         run: dotnet restore "${{ env.PROJECT_PATH }}"
 
@@ -35,7 +46,14 @@ jobs:
         run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
 
       - name: Publish (Release)
-        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --output ${{ github.workspace }}/${{ env.PUBLISH_DIR }}
+        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --output "${{ github.workspace }}/${{ env.PUBLISH_DIR }}"
+
+      - name: Show what we will deploy
+        run: |
+          echo "Publish directory contents:"
+          ls -lah "${{ env.PUBLISH_DIR }}"
+          echo "Main DLLs:"
+          find "${{ env.PUBLISH_DIR }}" -maxdepth 1 -name "*.dll" -print
 
       - name: Zip artifacts
         run: |
@@ -50,12 +68,11 @@ jobs:
       - name: Sanity: who am I & where
         run: |
           az account show -o table
-          echo "RG=${{ env.RESOURCE_GROUP }} APP=${{ env.AZURE_WEBAPP_NAME }}"
+          echo "RG=${{ env.RESOURCE_GROUP }}  APP=${{ env.AZURE_WEBAPP_NAME }}"
 
       - name: Can I see the app?
         continue-on-error: true
-        run: |
-          az webapp show -g "${{ env.RESOURCE_GROUP }}" -n "${{ env.AZURE_WEBAPP_NAME }}" -o table
+        run: az webapp show -g "${{ env.RESOURCE_GROUP }}" -n "${{ env.AZURE_WEBAPP_NAME }}" -o table
 
       - name: Deploy ZIP to Azure Web App (clean replace)
         run: |
