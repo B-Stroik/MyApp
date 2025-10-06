@@ -12,7 +12,7 @@ env:
   AZURE_WEBAPP_NAME: wp1-17786859-fa25
   RESOURCE_GROUP: rg-WebProgramming1-Fall2025-17786859
   DOTNET_VERSION: "8.0.x"
-  PROJECT_PATH: "."
+  PROJECT_PATH: "path/to/WebApp.csproj"   # <-- point to your web app .csproj
   PUBLISH_DIR: "publish"
   ZIP_NAME: "app.zip"
 
@@ -29,16 +29,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet restore
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
 
       - name: Build (Release)
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
 
       - name: Publish (Release)
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet publish --configuration Release --output ${{ github.workspace }}/${{ env.PUBLISH_DIR }}
+        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --output ${{ github.workspace }}/${{ env.PUBLISH_DIR }}
 
       - name: Zip artifacts
         run: |
@@ -60,13 +57,20 @@ jobs:
         run: |
           az webapp show -g "${{ env.RESOURCE_GROUP }}" -n "${{ env.AZURE_WEBAPP_NAME }}" -o table
 
-      - name: Deploy ZIP to Azure Web App
+      - name: Deploy ZIP to Azure Web App (clean replace)
         run: |
           az webapp deploy \
             --resource-group "${{ env.RESOURCE_GROUP }}" \
             --name "${{ env.AZURE_WEBAPP_NAME }}" \
             --src-path "${{ env.ZIP_NAME }}" \
-            --type zip
+            --type zip \
+            --clean true
 
-      - name: Warm up site
-        run: echo "Deployed to https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+      - name: Restart app
+        run: az webapp restart -g "${{ env.RESOURCE_GROUP }}" -n "${{ env.AZURE_WEBAPP_NAME }}"
+
+      - name: Verify homepage
+        run: |
+          curl -sI "https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net" | head -n 20
+          echo "-----"
+          curl -s "https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net" | head -n 60
