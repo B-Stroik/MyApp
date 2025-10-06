@@ -39,6 +39,12 @@ jobs:
           echo "Detected: $CS"
           echo "PROJECT_PATH=$CS" >> $GITHUB_ENV
 
+      - name: Show PROJECT_PATH picked by detector
+        run: |
+          echo "PROJECT_PATH=${{ env.PROJECT_PATH }}"
+          ls -lah "$(dirname "${{ env.PROJECT_PATH }}")"
+
+
       - name: Restore
         run: dotnet restore "${{ env.PROJECT_PATH }}"
 
