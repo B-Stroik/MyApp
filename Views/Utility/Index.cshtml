@@ -1,0 +1,73 @@
+@model MyApp.Models.UtilityViewModel
+
+@{
+    ViewData["Title"] = "Utility Tools";
+}
+
+<h1>Utility Tools</h1>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-info">@Model.Message</div>
+}
+
+<div class="row">
+    <!-- Count Vowels -->
+    <div class="col-md-4">
+        <h3>Count Vowels</h3>
+        <form asp-action="CountVowels" method="post">
+            <div class="mb-3">
+                <label class="form-label">Input String</label>
+                <input asp-for="InputString" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Count</button>
+
+            @if (Model.VowelCountResult.HasValue && Model.LastOperation == "CountVowels")
+            {
+                <p class="mt-3">
+                    Vowel Count: <strong>@Model.VowelCountResult</strong>
+                </p>
+            }
+        </form>
+    </div>
+
+    <!-- Leap Year -->
+    <div class="col-md-4">
+        <h3>Leap Year Checker</h3>
+        <form asp-action="CheckLeapYear" method="post">
+            <div class="mb-3">
+                <label class="form-label">Year</label>
+                <input asp-for="Year" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Check</button>
+
+            @if (Model.IsLeapYearResult.HasValue && Model.LastOperation == "CheckLeapYear")
+            {
+                <p class="mt-3">
+                    Result:
+                    <strong>@(Model.IsLeapYearResult.Value ? "Leap Year" : "Not a Leap Year")</strong>
+                </p>
+            }
+        </form>
+    </div>
+
+    <!-- Palindrome -->
+    <div class="col-md-4">
+        <h3>Palindrome Checker</h3>
+        <form asp-action="CheckPalindrome" method="post">
+            <div class="mb-3">
+                <label class="form-label">Number</label>
+                <input asp-for="Number" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Check</button>
+
+            @if (Model.IsPalindromeResult.HasValue && Model.LastOperation == "CheckPalindrome")
+            {
+                <p class="mt-3">
+                    Result:
+                    <strong>@(Model.IsPalindromeResult.Value ? "Palindrome" : "Not a Palindrome")</strong>
+                </p>
+            }
+        </form>
+    </div>
+</div>
