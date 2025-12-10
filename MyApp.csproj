@@ -11,3 +11,7 @@
     <None Remove="MyApp.Tests\**" />
   </ItemGroup>
 </Project>
+
+<ItemGroup>
+  <Compile Remove="MyApp.Tests\**\*.cs" />
+</ItemGroup>
