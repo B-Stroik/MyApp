@@ -23,7 +23,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-// 4) MVC route: default to Utility/Index
+app.UseStaticFiles();
+app.UseRouting();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Utility}/{action=Index}/{id?}");
