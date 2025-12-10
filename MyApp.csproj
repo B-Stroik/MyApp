@@ -4,4 +4,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="MyApp.Tests\**" />
+    <Content Remove="MyApp.Tests\**" />
+    <EmbeddedResource Remove="MyApp.Tests\**" />
+    <None Remove="MyApp.Tests\**" />
+  </ItemGroup>
 </Project>
