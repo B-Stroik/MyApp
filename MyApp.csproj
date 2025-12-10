@@ -5,3 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 </Project>
+
+<ItemGroup>
+  <Compile Remove="MyApp.Tests\**\*.cs" />
+</ItemGroup>
