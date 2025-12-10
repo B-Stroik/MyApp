@@ -12,6 +12,3 @@
   </ItemGroup>
 </Project>
 
-<ItemGroup>
-  <Compile Remove="MyApp.Tests\**\*.cs" />
-</ItemGroup>
