@@ -3,11 +3,7 @@
 
 name: Build and deploy ASP.Net Core app to Azure Web App - wp1-17786859-fa25
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on: []
 
 jobs:
   build:
@@ -52,4 +48,5 @@ jobs:
           app-name: 'wp1-17786859-fa25'
           slot-name: 'Production'
           package: .
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_72A7B0A0A4344D3698A1E88F888C8222 }}
