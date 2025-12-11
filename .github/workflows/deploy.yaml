@@ -1,4 +1,4 @@
-name: Build & Deploy to Azure Web App (Slot)
+name: Deploy303
 
 on:
   push:
