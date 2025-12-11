@@ -8,11 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  SOLUTION_PATH: ./MyApp.sln
-  PROJECT_PATH: ./MyApp.csproj
-  PUBLISH_DIR: ./publish
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,19 +19,23 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: '8.0.x'
 
+      # Restore only the solution or the web project
       - name: Restore
-        run: dotnet restore ${{ env.SOLUTION_PATH }}
+        run: dotnet restore ./MyApp.sln
 
+      # Build the web project
       - name: Build
-        run: dotnet build ${{ env.SOLUTION_PATH }} -c Release --no-restore
+        run: dotnet build ./MyApp.csproj -c Release --no-restore
 
+      # Run tests (optional but nice for grading)
       - name: Test
-        run: dotnet test ${{ env.SOLUTION_PATH }} -c Release --no-build --verbosity normal
+        run: dotnet test ./MyApp.Tests/MyApp.Tests.csproj -c Release --no-build
 
-      - name: Publish Web App
-        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ env.PUBLISH_DIR }} --no-build
+      # Publish the web project explicitly
+      - name: Publish
+        run: dotnet publish ./MyApp.csproj -c Release -o ./publish --no-build
 
       - name: Azure Login
         uses: azure/login@v2
@@ -49,8 +48,8 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      - name: Deploy to App Service slot
+      - name: Deploy to App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: wp1-17786859-fa25
-          package: ${{ env.PUBLISH_DIR }}
+          package: ./publish
