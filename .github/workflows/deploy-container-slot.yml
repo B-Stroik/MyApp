@@ -1,11 +1,6 @@
 name: Build & Deploy Container to Slot
 
-on:
-  workflow_dispatch:
-    inputs:
-      image_tag:
-        description: "Image tag (default = commit SHA)"
-        required: false
+on: []
 
 permissions:
   id-token: write
