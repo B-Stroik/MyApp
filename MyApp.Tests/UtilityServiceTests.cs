@@ -38,7 +38,7 @@ namespace MyApp.Tests
         {
             var input = "AEIOU";
             var result = _service.CountVowels(input);
-            Assert.That(result, Is.EqualTo(3));
+            Assert.That(result, Is.EqualTo(5));
         }
 
         [Test]
