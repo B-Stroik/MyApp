@@ -31,7 +31,7 @@ jobs:
 
       # Run tests
       - name: Test
-  run: dotnet test ./MyApp.Tests/MyApp.Tests.csproj -c Release
+        run: dotnet test ./MyApp.Tests/MyApp.Tests.csproj -c Release
 
 
       # Publish the web project explicitly
