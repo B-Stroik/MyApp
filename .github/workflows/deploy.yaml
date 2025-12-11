@@ -42,9 +42,8 @@ jobs:
             }
 
       # Deploy the build output to the deployment slot
-      - name: Deploy to App Service slot
+        - name: Deploy to App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: wp1-17786859-fa25
-          slot-name: container-demo
-          package: publish
+          package: ${{ env.PUBLISH_DIR }}
