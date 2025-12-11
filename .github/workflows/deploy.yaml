@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+env:
+  SOLUTION_PATH: ./MyApp.sln
+  PROJECT_PATH: ./MyApp.csproj
+  PUBLISH_DIR: ./publish
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -19,16 +24,19 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ${{ env.SOLUTION_PATH }} -c Release --no-restore
 
-      - name: Publish
-        run: dotnet publish -c Release -o publish
+      - name: Test
+        run: dotnet test ${{ env.SOLUTION_PATH }} -c Release --no-build --verbosity normal
+
+      - name: Publish Web App
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ env.PUBLISH_DIR }} --no-build
 
       - name: Azure Login
         uses: azure/login@v2
@@ -41,9 +49,9 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      # Deploy the build output to the deployment slot
-        - name: Deploy to App Service
+      - name: Deploy to App Service slot
         uses: azure/webapps-deploy@v3
         with:
           app-name: wp1-17786859-fa25
+          slot-name: container-demo
           package: ${{ env.PUBLISH_DIR }}
