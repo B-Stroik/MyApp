@@ -1,8 +1,6 @@
 name: Build & Deploy to Azure Web App (Prod - ZIP)
 
-on:
-  push:
-    branches: [ "main" ]
+on: []
 
 permissions:
   id-token: write
