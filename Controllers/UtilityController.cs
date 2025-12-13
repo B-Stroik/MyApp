@@ -1,70 +1,47 @@
 using Microsoft.AspNetCore.Mvc;
-using MyApp.Models;
 using MyApp.Services;
 
 namespace MyApp.Controllers
 {
     public class UtilityController : Controller
     {
-        private readonly IUtilityService _utilityService;
+        private readonly UtilityService _utilityService;
 
-        public UtilityController(IUtilityService utilityService)
+        public UtilityController()
         {
-            _utilityService = utilityService;
+            // simple manual creation; matches how your tests use it
+            _utilityService = new UtilityService();
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            return View(new UtilityViewModel());
+            // just returns the view with the three tools
+            return View();
         }
 
         [HttpPost]
-        public IActionResult CountVowels(UtilityViewModel model)
+        public IActionResult CountVowels(string inputString)
         {
-            if (string.IsNullOrEmpty(model.InputString))
-            {
-                model.Message = "Please enter a string.";
-            }
-            else
-            {
-                model.VowelCountResult = _utilityService.CountVowels(model.InputString);
-                model.LastOperation = "CountVowels";
-            }
-
-            return View("Index", model);
+            int count = _utilityService.CountVowels(inputString);
+            ViewBag.VowelResult = count;
+            return View("Index");
         }
 
         [HttpPost]
-        public IActionResult CheckLeapYear(UtilityViewModel model)
+        public IActionResult CheckLeapYear(int year)
         {
-            if (!model.Year.HasValue)
-            {
-                model.Message = "Please enter a year.";
-            }
-            else
-            {
-                model.IsLeapYearResult = _utilityService.IsLeapYear(model.Year.Value);
-                model.LastOperation = "CheckLeapYear";
-            }
-
-            return View("Index", model);
+            bool isLeap = _utilityService.IsLeapYear(year);
+            ViewBag.LeapYearResult = isLeap;
+            return View("Index");
         }
 
         [HttpPost]
-        public IActionResult CheckPalindrome(UtilityViewModel model)
+        public IActionResult CheckPalindrome(int number)
         {
-            if (!model.Number.HasValue)
-            {
-                model.Message = "Please enter a number.";
-            }
-            else
-            {
-                model.IsPalindromeResult = _utilityService.IsPalindrome(model.Number.Value);
-                model.LastOperation = "CheckPalindrome";
-            }
-
-            return View("Index", model);
+            bool isPal = _utilityService.IsPalindrome(number);
+            ViewBag.PalindromeResult = isPal;
+            return View("Index");
         }
     }
 }
