@@ -100,7 +100,7 @@ namespace MyApp.Tests
         [Test]
         public void IsPalindrome_WithPalindromeNumber_ReturnsTrue()
         {
-            var number = "121";
+            var number = 121;
             var result = _service.IsPalindrome(number);
             Assert.That(result, Is.True);
         }
@@ -108,7 +108,7 @@ namespace MyApp.Tests
         [Test]
         public void IsPalindrome_WithNonPalindromeNumber_ReturnsFalse()
         {
-            var number = "123";
+            var number = 123;
             var result = _service.IsPalindrome(number);
             Assert.That(result, Is.False);
         }
@@ -116,7 +116,7 @@ namespace MyApp.Tests
         [Test]
         public void IsPalindrome_WithNegativeNumber_ReturnsFalse()
         {
-            var number = "-121";
+            var number = -121;
             var result = _service.IsPalindrome(number);
             Assert.That(result, Is.False);
         }
@@ -124,7 +124,7 @@ namespace MyApp.Tests
         [Test]
         public void IsPalindrome_NumberEndingInZero_ReturnsFalse()
         {
-            var number = "10";
+            var number = 10;
             var result = _service.IsPalindrome(number);
             Assert.That(result, Is.False);
         }

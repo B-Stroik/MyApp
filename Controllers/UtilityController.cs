@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MyApp.Models;
 using MyApp.Services;
 
 namespace MyApp.Controllers
@@ -12,42 +13,42 @@ namespace MyApp.Controllers
             _utilityService = utilityService;
         }
 
+        // GET /Utility
         [HttpGet]
         public IActionResult Index()
         {
-            // just returns the page with the three tools
-            return View();
+            return View(new UtilityViewModel());
         }
 
-        // Count Vowels ---------------------------------------------------
+        // POST /Utility/CountVowels
         [HttpPost]
-        public IActionResult CountVowels(string inputString)
+        public IActionResult CountVowels(UtilityViewModel model)
         {
-            // make sure we never pass null to the service
-            var count = _utilityService.CountVowels(inputString ?? string.Empty);
-            ViewBag.VowelResult = count;
-
-            return View("Index");
+            model.VowelCountResult = _utilityService.CountVowels(model.InputString ?? "");
+            model.LastOperation = "CountVowels";
+            return View("Index", model);
         }
 
-        // Leap Year ------------------------------------------------------
+        // POST /Utility/CheckLeapYear
         [HttpPost]
-        public IActionResult CheckLeapYear(int year)
+        public IActionResult CheckLeapYear(UtilityViewModel model)
         {
-            var isLeap = _utilityService.IsLeapYear(year);
-            ViewBag.LeapYearResult = isLeap;
+            if (model.Year.HasValue)
+                model.IsLeapYearResult = _utilityService.IsLeapYear(model.Year.Value);
 
-            return View("Index");
+            model.LastOperation = "CheckLeapYear";
+            return View("Index", model);
         }
 
-        // Palindrome -----------------------------------------------------
+        // POST /Utility/CheckPalindrome
         [HttpPost]
-        public IActionResult CheckPalindrome(string number)
+        public IActionResult CheckPalindrome(UtilityViewModel model)
         {
-            var isPalindrome = _utilityService.IsPalindrome(number ?? string.Empty);
-            ViewBag.PalindromeResult = isPalindrome;
+            if (model.Number.HasValue)
+                model.IsPalindromeResult = _utilityService.IsPalindrome(model.Number.Value);
 
-            return View("Index");
+            model.LastOperation = "CheckPalindrome";
+            return View("Index", model);
         }
     }
 }

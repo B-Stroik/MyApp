@@ -16,56 +16,80 @@
     <!-- Count Vowels -->
     <div class="col-md-4">
         <h3>Count Vowels</h3>
-        <form asp-action="CountVowels" method="post">
+
+        <!-- Plain HTML form: posts to /Utility/CountVowels -->
+        <form action="/Utility/CountVowels" method="post">
             <div class="mb-3">
-                <label class="form-label">Input String</label>
-                <input asp-for="InputString" class="form-control" />
+                <label class="form-label" for="InputString">Input String</label>
+
+                <!-- Plain input; name MUST match the property on UtilityViewModel -->
+                <input type="text"
+                       id="InputString"
+                       name="InputString"
+                       class="form-control"
+                       value="@Model?.InputString" />
             </div>
+
             <button type="submit" class="btn btn-primary">Count</button>
 
-            @if (Model != null && Model.VowelCountResult.HasValue && Model.LastOperation == "CountVowels")
-{
-            <p class="mt-3">
-               Vowel Count: <strong>@Model.VowelCountResult</strong>
-            </p>
-}
-
-        </form>
-    </div>
-
-    <!-- Leap Year -->
-    <div class="col-md-4">
-        <h3>Leap Year Checker</h3>
-        <form asp-action="CheckLeapYear" method="post">
-            <div class="mb-3">
-                <label class="form-label">Year</label>
-                <input asp-for="Year" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary">Check</button>
-
-            @* Count Vowels *@
-            @if (Model?.VowelCountResult.HasValue == true &&
+            @if (Model != null &&
+            Model.VowelCountResult.HasValue &&
             Model.LastOperation == "CountVowels")
             {
                 <p class="mt-3">
                     Vowel Count: <strong>@Model.VowelCountResult</strong>
                 </p>
             }
+        </form>
+    </div>
 
+
+    <div class="col-md-4">
+        <h3>Leap Year Checker</h3>
+        <!-- Plain HTML form: posts to /Utility/CheckLeapYear -->
+        <form action="/Utility/CheckLeapYear" method="post">
+            <div class="mb-3">
+                <label class="form-label" for="Year">Year</label>
+                <!-- name must match UtilityViewModel.Year -->
+                <input type="number"
+                       id="Year"
+                       name="Year"
+                       class="form-control"
+                       value="@(Model?.Year?.ToString() ?? "")" />
+            </div>
+            <button type="submit" class="btn btn-primary">Check</button>
+
+            @* Leap Year result *@
+            @if (Model?.IsLeapYearResult.HasValue == true &&
+            Model.LastOperation == "CheckLeapYear")
+            {
+                <p class="mt-3">
+                    Result:
+                    <strong>
+                        @(Model.IsLeapYearResult.Value ? "Leap Year" : "Not a Leap Year")
+                    </strong>
+                </p>
+            }
         </form>
     </div>
 
     <!-- Palindrome -->
     <div class="col-md-4">
         <h3>Palindrome Checker</h3>
-        <form asp-action="CheckPalindrome" method="post">
+        <!-- Plain HTML form: posts to /Utility/CheckPalindrome -->
+        <form action="/Utility/CheckPalindrome" method="post">
             <div class="mb-3">
-                <label class="form-label">Number</label>
-                <input asp-for="Number" class="form-control" />
+                <label class="form-label" for="Number">Number</label>
+                <!-- name must match UtilityViewModel.Number -->
+                <input type="number"
+                       id="Number"
+                       name="Number"
+                       class="form-control"
+                       value="@(Model?.Number?.ToString() ?? "")" />
             </div>
             <button type="submit" class="btn btn-primary">Check</button>
 
-            @* Palindrome *@
+            @* Palindrome result *@
             @if (Model?.IsPalindromeResult.HasValue == true &&
             Model.LastOperation == "CheckPalindrome")
             {
@@ -76,7 +100,6 @@
                     </strong>
                 </p>
             }
-
         </form>
     </div>
-</div>
+

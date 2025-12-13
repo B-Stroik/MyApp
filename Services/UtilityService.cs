@@ -16,12 +16,11 @@ namespace MyApp.Services
             return (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0);
         }
 
-        public bool IsPalindrome(string number)
+        public bool IsPalindrome(int number)
         {
-            if (string.IsNullOrWhiteSpace(number)) return false;
-            var trimmed = number.Trim();
-            var reversed = new string(trimmed.Reverse().ToArray());
-            return trimmed == reversed;
+            var s = number.ToString();
+            var reversed = new string(s.Reverse().ToArray());
+            return s == reversed;
         }
     }
 }
