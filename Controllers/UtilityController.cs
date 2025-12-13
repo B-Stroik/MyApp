@@ -7,16 +7,14 @@ namespace MyApp.Controllers
     {
         private readonly UtilityService _utilityService;
 
-        public UtilityController()
+        public UtilityController(UtilityService utilityService)
         {
-            // simple manual creation; matches how your tests use it
-            _utilityService = new UtilityService();
+            _utilityService = utilityService;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            // just returns the view with the three tools
             return View();
         }
 

@@ -5,8 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // MVC
 builder.Services.AddControllersWithViews();
 
-// your DI registrations
-builder.Services.AddScoped<IUtilityService, UtilityService>();
+builder.Services.AddScoped<UtilityService>();
 
 var app = builder.Build();
 
