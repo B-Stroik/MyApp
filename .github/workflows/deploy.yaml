@@ -13,31 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1) Get the source
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2) Install .NET 8 SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # Restore only the solution or the web project
-      - name: Restore
+      # 3) Restore NuGet packages for the whole solution
+      - name: Restore solution
         run: dotnet restore ./MyApp.sln
 
-      # Build the web project
-      - name: Build
-        run: dotnet build ./MyApp.csproj -c Release --no-restore
+      # 4) Build the whole solution (web app + tests) in Release
+      - name: Build solution
+        run: dotnet build ./MyApp.sln -c Release --no-restore
 
-      # Run tests
-      - name: Test
-        run: dotnet test ./MyApp.Tests/MyApp.Tests.csproj -c Release
+      # 5) Run unit tests (will fail the pipeline if any test fails)
+      - name: Run tests
+        run: dotnet test ./MyApp.Tests/MyApp.Tests.csproj -c Release --no-build
 
-
-      # Publish the web project explicitly
-      - name: Publish
+      # 6) Publish ONLY the web app project into a folder called "publish"
+      - name: Publish web app
         run: dotnet publish ./MyApp.csproj -c Release -o ./publish --no-build
 
+      # 7) Login to Azure using the federated credentials / client secret in secrets
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -49,8 +51,9 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
+      # 8) Deploy the published folder to your App Service
       - name: Deploy to App Service
         uses: azure/webapps-deploy@v3
         with:
-          app-name: wp1-17786859-fa25
+          app-name: wp1-17786859-fa25   # your app service name
           package: ./publish
