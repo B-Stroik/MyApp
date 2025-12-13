@@ -1,11 +1,12 @@
-using MyApp.Services;
+using MyApp.Services;   // <--- important
 
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<UtilityService>();
+// register your utility service
+builder.Services.AddScoped<IUtilityService, UtilityService>();
 
 var app = builder.Build();
 
@@ -21,8 +22,9 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-// *** IMPORTANT: default route points to Utility/Index ***
+// /  -> HomeController.Index  (which will redirect to Utility/Index)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.Run();

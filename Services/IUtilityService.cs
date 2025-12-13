@@ -4,6 +4,6 @@ namespace MyApp.Services
     {
         int CountVowels(string input);
         bool IsLeapYear(int year);
-        bool IsPalindrome(int number);
+        bool IsPalindrome(string number);
     }
 }

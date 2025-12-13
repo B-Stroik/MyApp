@@ -6,10 +6,11 @@
 
 <h1>Utility Tools</h1>
 
-@if (!string.IsNullOrEmpty(Model.Message))
+@if (Model != null && !string.IsNullOrEmpty(Model.Message))
 {
     <div class="alert alert-info">@Model.Message</div>
 }
+
 
 <div class="row">
     <!-- Count Vowels -->
