@@ -23,12 +23,13 @@
             </div>
             <button type="submit" class="btn btn-primary">Count</button>
 
-            @if (Model.VowelCountResult.HasValue && Model.LastOperation == "CountVowels")
-            {
-                <p class="mt-3">
-                    Vowel Count: <strong>@Model.VowelCountResult</strong>
-                </p>
-            }
+            @if (Model != null && Model.VowelCountResult.HasValue && Model.LastOperation == "CountVowels")
+{
+            <p class="mt-3">
+               Vowel Count: <strong>@Model.VowelCountResult</strong>
+            </p>
+}
+
         </form>
     </div>
 
@@ -42,13 +43,15 @@
             </div>
             <button type="submit" class="btn btn-primary">Check</button>
 
-            @if (Model.IsLeapYearResult.HasValue && Model.LastOperation == "CheckLeapYear")
+            @* Count Vowels *@
+            @if (Model?.VowelCountResult.HasValue == true &&
+            Model.LastOperation == "CountVowels")
             {
                 <p class="mt-3">
-                    Result:
-                    <strong>@(Model.IsLeapYearResult.Value ? "Leap Year" : "Not a Leap Year")</strong>
+                    Vowel Count: <strong>@Model.VowelCountResult</strong>
                 </p>
             }
+
         </form>
     </div>
 
@@ -62,13 +65,18 @@
             </div>
             <button type="submit" class="btn btn-primary">Check</button>
 
-            @if (Model.IsPalindromeResult.HasValue && Model.LastOperation == "CheckPalindrome")
+            @* Palindrome *@
+            @if (Model?.IsPalindromeResult.HasValue == true &&
+            Model.LastOperation == "CheckPalindrome")
             {
                 <p class="mt-3">
                     Result:
-                    <strong>@(Model.IsPalindromeResult.Value ? "Palindrome" : "Not a Palindrome")</strong>
+                    <strong>
+                        @(Model.IsPalindromeResult.Value ? "Palindrome" : "Not a Palindrome")
+                    </strong>
                 </p>
             }
+
         </form>
     </div>
 </div>
