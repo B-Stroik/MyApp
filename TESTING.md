@@ -67,4 +67,11 @@ public void CountVowels_WithNormalString_ReturnsCorrectCount()
 
     // ASSERT
     Assert.AreEqual(3, result);
+
+
+How to run unit tests locally
+dotnet test --filter "Category!=Integration"
+
+How to run integration tests locally
+dotnet test --filter "Category=Integration"
 }
