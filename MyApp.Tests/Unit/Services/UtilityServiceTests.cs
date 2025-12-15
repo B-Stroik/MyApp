@@ -1,17 +1,13 @@
-using NUnit.Framework;
+using Xunit;
 using MyApp.Services;
-
-using Assert = NUnit.Framework.Assert;
 
 namespace MyApp.Tests.Unit.Services
 {
-    [TestFixture]
     public class UtilityServiceTests
     {
-        private IUtilityService _service = null!;
+        private readonly IUtilityService _service;
 
-        [SetUp]
-        public void Setup()
+        public UtilityServiceTests()
         {
             _service = new UtilityService();
         }
@@ -20,7 +16,7 @@ namespace MyApp.Tests.Unit.Services
         // CountVowels Tests (4)
         // -------------------------------
 
-        [Test]
+        [Fact]
         public void CountVowels_WithNormalString_ReturnsCorrectCount()
         {
             // Arrange
@@ -30,103 +26,158 @@ namespace MyApp.Tests.Unit.Services
             var result = _service.CountVowels(input);
 
             // Assert
-            Assert.That(result, Is.EqualTo(3));
+            Assert.Equal(3, result);
         }
 
-        [Test]
+        [Fact]
         public void CountVowels_WithUppercaseVowels_ReturnsCorrectCount()
         {
+            // Arrange
             var input = "AEIOU";
+
+            // Act
             var result = _service.CountVowels(input);
-            Assert.That(result, Is.EqualTo(5));
+
+            // Assert
+            Assert.Equal(5, result);
         }
 
-        [Test]
+        [Fact]
         public void CountVowels_WithEmptyString_ReturnsZero()
         {
+            // Arrange
             var input = "";
+
+            // Act
             var result = _service.CountVowels(input);
-            Assert.That(result, Is.EqualTo(0));
+
+            // Assert
+            Assert.Equal(0, result);
         }
 
-        [Test]
+        [Fact]
         public void CountVowels_WithNull_ReturnsZero()
         {
+            // Arrange
             string? input = null;
+
+            // Act
             var result = _service.CountVowels(input);
-            Assert.That(result, Is.EqualTo(0));
+
+            // Assert
+            Assert.Equal(0, result);
         }
 
         // -------------------------------
         // IsLeapYear Tests (4)
         // -------------------------------
 
-        [Test]
+        [Fact]
         public void IsLeapYear_YearDivisibleBy400_ReturnsTrue()
         {
+            // Arrange
             var year = 2000;
+
+            // Act
             var result = _service.IsLeapYear(year);
-            Assert.That(result, Is.True);
+
+            // Assert
+            Assert.True(result);
         }
 
-        [Test]
+        [Fact]
         public void IsLeapYear_YearDivisibleBy100ButNot400_ReturnsFalse()
         {
+            // Arrange
             var year = 1900;
+
+            // Act
             var result = _service.IsLeapYear(year);
-            Assert.That(result, Is.False);
+
+            // Assert
+            Assert.False(result);
         }
 
-        [Test]
+        [Fact]
         public void IsLeapYear_YearDivisibleBy4ButNot100_ReturnsTrue()
         {
+            // Arrange
             var year = 2024;
+
+            // Act
             var result = _service.IsLeapYear(year);
-            Assert.That(result, Is.True);
+
+            // Assert
+            Assert.True(result);
         }
 
-        [Test]
+        [Fact]
         public void IsLeapYear_YearNotDivisibleBy4_ReturnsFalse()
         {
+            // Arrange
             var year = 2023;
+
+            // Act
             var result = _service.IsLeapYear(year);
-            Assert.That(result, Is.False);
+
+            // Assert
+            Assert.False(result);
         }
 
         // -------------------------------
         // IsPalindrome Tests (4)
         // -------------------------------
 
-        [Test]
+        [Fact]
         public void IsPalindrome_WithPalindromeNumber_ReturnsTrue()
         {
+            // Arrange
             var number = 121;
+
+            // Act
             var result = _service.IsPalindrome(number);
-            Assert.That(result, Is.True);
+
+            // Assert
+            Assert.True(result);
         }
 
-        [Test]
+        [Fact]
         public void IsPalindrome_WithNonPalindromeNumber_ReturnsFalse()
         {
+            // Arrange
             var number = 123;
+
+            // Act
             var result = _service.IsPalindrome(number);
-            Assert.That(result, Is.False);
+
+            // Assert
+            Assert.False(result);
         }
 
-        [Test]
+        [Fact]
         public void IsPalindrome_WithNegativeNumber_ReturnsFalse()
         {
+            // Arrange
             var number = -121;
+
+            // Act
             var result = _service.IsPalindrome(number);
-            Assert.That(result, Is.False);
+
+            // Assert
+            Assert.False(result);
         }
 
-        [Test]
+        [Fact]
         public void IsPalindrome_NumberEndingInZero_ReturnsFalse()
         {
+            // Arrange
             var number = 10;
+
+            // Act
             var result = _service.IsPalindrome(number);
-            Assert.That(result, Is.False);
+
+            // Assert
+            Assert.False(result);
         }
     }
 }
