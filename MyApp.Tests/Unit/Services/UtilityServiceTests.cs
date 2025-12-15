@@ -3,7 +3,7 @@ using MyApp.Services;
 
 using Assert = NUnit.Framework.Assert;
 
-namespace MyApp.Tests
+namespace MyApp.Tests.Unit.Services
 {
     [TestFixture]
     public class UtilityServiceTests
